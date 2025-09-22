@@ -1,0 +1,18 @@
+EM Analyzer — Test EULA (Non-Commercial, Evaluation Only)
+
+1. License Grant. You may install and use EM Analyzer solely for internal
+   evaluation and testing. No commercial use.
+2. No Redistribution. You may not share, publish, upload or distribute the
+   Software or any part of it to third parties.
+3. Confidentiality. You shall keep the Software and related materials
+   confidential and take reasonable steps to prevent disclosure.
+4. No Reverse Engineering. You may not reverse engineer, decompile, or disassemble.
+5. Term. This license is revocable at any time and automatically terminates
+   upon release of a production build or upon notice from Licensor.
+6. No Warranty. The Software is provided “AS IS” without warranty of any kind.
+7. Limitation of Liability. To the maximum extent permitted by law, Licensor
+   shall not be liable for any damages arising out of or in connection with the
+   use or inability to use the Software.
+8. Governing Law. [Upiši nadležnost, npr. Republika Srbija.]
+
+© 2025 Ivan Milović. All rights reserved.
