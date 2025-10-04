@@ -13,6 +13,7 @@ EM Analyzer — Test EULA (Non-Commercial, Evaluation Only)
 7. Limitation of Liability. To the maximum extent permitted by law, Licensor
    shall not be liable for any damages arising out of or in connection with the
    use or inability to use the Software.
-8. Governing Law. [Upiši nadležnost, npr. Republika Srbija.]
+8. Governing Law [Republic of Serbia].
 
 © 2025 Ivan Milović. All rights reserved.
+
