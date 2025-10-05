@@ -14,13 +14,12 @@ jobs:
   notes:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # potrebno za updateRelease
+      contents: write
 
     steps:
       - name: Checkout repo (for template)
         uses: actions/checkout@v4
 
-      # Uzmimo TAG iz release eventa ili iz ručnog inputa
       - name: Set TAG
         shell: bash
         run: |
@@ -31,7 +30,6 @@ jobs:
           fi
           echo "Using TAG=$TAG"
 
-      # Preuzmi manifest.json iz RELEASE asseta za taj TAG
       - name: Download manifest.json
         uses: robinraju/release-downloader@v1.8
         with:
@@ -39,14 +37,7 @@ jobs:
           fileName: manifest.json
           out-file-path: release_assets
 
-      # (debug) pokaži heder – EF BB BF znači BOM
-      - name: Inspect manifest header
-        shell: bash
-        run: |
-          head -c 16 release_assets/manifest.json | xxd
-
-      # PARSIRANJE ISKLJUČIVO U PYTHONU (utf-8-sig uklanja BOM)
-      - name: Parse manifest and export env
+      - name: Parse manifest and export env (tolerantno na BOM)
         shell: python
         run: |
           import json, io, sys
@@ -58,7 +49,6 @@ jobs:
               sys.exit("manifest.json must contain 'sha256'")
           print(f"SHA256={sha}")
 
-      # Render iz sablona (u root-u: release_notes_template.md)
       - name: Render release notes
         shell: bash
         run: |
@@ -69,7 +59,6 @@ jobs:
           echo "----- RELEASE BODY -----"
           cat RELEASE_BODY.md
 
-      # Ažuriraj telo releasa po TAG-u
       - name: Update GitHub Release body
         uses: actions/github-script@v7
         with:
