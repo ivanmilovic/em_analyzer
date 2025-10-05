@@ -1,1 +1,105 @@
+name: Fill Release Notes from uploaded manifest
 
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag releasa (npr. v20251005-1118)'
+        required: true
+
+jobs:
+  notes:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # potrebno za updateRelease
+
+    steps:
+      - name: Checkout repo (for template)
+        uses: actions/checkout@v4
+
+      # TAG iz eventa ili iz ručnog inputa
+      - name: Set TAG
+        shell: bash
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+          fi
+          echo "Using TAG=$TAG"
+
+      - name: Download manifest.json from this release
+        uses: robinraju/release-downloader@v1.8
+        with:
+          tag: ${{ env.TAG }}
+          fileName: "manifest.json"
+          out-file-path: "release_assets"
+
+      # (debug) prikaži prvih 16 bajtova – videćemo EF BB BF ako postoji BOM
+      - name: Inspect manifest header (before)
+        run: |
+          head -c 16 release_assets/manifest.json | xxd
+
+      # 1) SKINI BOM BEZUSLOVNO (radi i ako ga nema)
+      - name: Strip UTF-8 BOM from manifest.json
+        shell: bash
+        run: |
+          # ukloni EF BB BF sa početka fajla ako postoji
+          sed -i '1s/^\xEF\xBB\xBF//' release_assets/manifest.json
+
+      # (debug) posle skidanja BOM-a
+      - name: Inspect manifest header (after)
+        run: |
+          head -c 16 release_assets/manifest.json | xxd
+          echo
+          cat release_assets/manifest.json
+
+      # 2) PARSIRAJ manifest u PYTHONU sa utf-8-sig (tolerantno na BOM)
+      - name: Parse manifest and export env
+        shell: bash
+        run: |
+          python - <<'PY' >> $GITHUB_ENV
+import json, io
+p = 'release_assets/manifest.json'
+with io.open(p, 'r', encoding='utf-8-sig') as f:
+    m = json.load(f)
+sha = m.get('sha256')
+if not sha:
+    raise SystemExit("manifest.json must contain 'sha256'")
+print("SHA256=" + sha)
+ver = m.get('version')
+if ver:
+    print("VERSION=" + str(ver))
+PY
+
+      # 3) RENDER NOTE-ova iz sablona u root-u
+      - name: Render release notes
+        shell: bash
+        run: |
+          test -f release_notes_template.md || { echo "Missing release_notes_template.md in repo root"; exit 1; }
+          sed -e "s/{{TAG}}/${TAG}/g" \
+              -e "s/{{SHA256}}/${SHA256}/g" \
+              release_notes_template.md > RELEASE_BODY.md
+          echo "----- RELEASE BODY -----"
+          cat RELEASE_BODY.md
+
+      # 4) UPDATE postojećeg release-a po TAG-u
+      - name: Update GitHub Release body
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('RELEASE_BODY.md','utf8');
+            const { data: rel } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag: process.env.TAG
+            });
+            await github.rest.repos.updateRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              release_id: rel.id,
+              body
+            });
