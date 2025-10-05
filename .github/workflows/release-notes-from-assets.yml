@@ -1,4 +1,4 @@
-name: Fill Release Notes from uploaded manifest Latest
+name: Release Notes (NEW v4)
 
 on:
   release:
@@ -20,6 +20,10 @@ jobs:
       - name: Checkout repo (for template)
         uses: actions/checkout@v4
 
+      - name: Stamp
+        run: echo "USING NEW WORKFLOW v4"
+
+      # Uzmemo TAG iz eventa ili ručnog pokretanja
       - name: Set TAG
         shell: bash
         run: |
@@ -37,17 +41,22 @@ jobs:
           fileName: manifest.json
           out-file-path: release_assets
 
-      - name: Parse manifest and export env (tolerantno na BOM)
-        shell: python
+      # >>> KLJUČNI KORAK: Python vrati hash, bash ga upiše u $GITHUB_ENV
+      - name: Parse manifest and export SHA256
+        shell: bash
         run: |
-          import json, io, sys
-          p = 'release_assets/manifest.json'
-          with io.open(p, 'r', encoding='utf-8-sig') as f:
-              m = json.load(f)
-          sha = m.get('sha256')
-          if not sha:
-              sys.exit("manifest.json must contain 'sha256'")
-          print(f"SHA256={sha}")
+          SHA256=$(python - <<'PY'
+import json, io
+with io.open('release_assets/manifest.json','r',encoding='utf-8-sig') as f:
+    m=json.load(f)
+print(m.get('sha256',''))
+PY
+)
+          if [ -z "$SHA256" ]; then
+            echo "ERROR: sha256 not found in manifest.json"; exit 1
+          fi
+          echo "SHA256=$SHA256" >> "$GITHUB_ENV"
+          echo "SHA256 parsed: $SHA256"
 
       - name: Render release notes
         shell: bash
@@ -57,6 +66,7 @@ jobs:
               -e "s/{{SHA256}}/${SHA256}/g" \
               release_notes_template.md > RELEASE_BODY.md
           echo "----- RELEASE BODY -----"
+          grep -n "SHA256" RELEASE_BODY.md || true
           cat RELEASE_BODY.md
 
       - name: Update GitHub Release body
