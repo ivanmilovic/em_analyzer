@@ -3,48 +3,53 @@ name: Fill Release Notes from uploaded manifest
 on:
   release:
     types: [published, edited]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag releasa (npr. v20251005-1118)'
+        required: true
 
 jobs:
   notes:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - name: Checkout repo (for template)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Download manifest.json from this release
+      - name: Set TAG
+        run: |
+          if [ -n "${{ github.event.release.tag_name }}" ]; then
+            echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          else
+            echo "TAG=${{ github.event.inputs.tag }}" >> $GITHUB_ENV
+          fi
+          echo "Using TAG=$TAG"
+
+      - name: Download manifest.json
         uses: robinraju/release-downloader@v1.8
         with:
-          tag: ${{ github.event.release.tag_name }}
+          tag: ${{ env.TAG }}
           fileName: "manifest.json"
           out-file-path: "release_assets"
-
-      - name: (debug) Show manifest.json
-        run: cat release_assets/manifest.json
 
       - name: Parse manifest (strip BOM) and set env
         shell: bash
         run: |
-          echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-          # Izvuci SHA256 (i opcionalni VERSION) iz manifest.json; ukloni UTF-8 BOM ako postoji
           node - <<'NODE' >> $GITHUB_ENV
           const fs = require('fs');
-          let txt = fs.readFileSync('release_assets/manifest.json','utf8');
-          txt = txt.replace(/^\uFEFF/, ''); // skini BOM
+          let txt = fs.readFileSync('release_assets/manifest.json','utf8').replace(/^\uFEFF/, '');
           const m = JSON.parse(txt);
           if (!m.sha256) { console.error('manifest.json must contain "sha256"'); process.exit(1); }
-          if (m.version) { console.log('VERSION=' + m.version); }
           console.log('SHA256=' + m.sha256);
           NODE
 
-      - name: Render release notes from template
+      - name: Render release notes
         run: |
-          test -f release_notes_template.md || { echo "Missing release_notes_template.md in repo root"; exit 1; }
           sed -e "s/{{TAG}}/${TAG}/g" \
               -e "s/{{SHA256}}/${SHA256}/g" \
               release_notes_template.md > RELEASE_BODY.md
-          echo "----- RELEASE BODY -----"
-          cat RELEASE_BODY.md
 
       - name: Update GitHub Release body
         uses: actions/github-script@v7
@@ -52,9 +57,9 @@ jobs:
           script: |
             const fs = require('fs');
             const body = fs.readFileSync('RELEASE_BODY.md','utf8');
+            const { data: rel } = await github.rest.repos.getReleaseByTag({
+              owner: context.repo.owner, repo: context.repo.repo, tag: process.env.TAG
+            });
             await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: context.payload.release.id,
-              body
+              owner: context.repo.owner, repo: context.repo.repo, release_id: rel.id, body
             });
