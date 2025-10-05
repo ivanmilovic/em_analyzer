@@ -7,38 +7,45 @@ on:
 jobs:
   notes:
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
 
-      # 1) Preuzmi manifest.json iz aktuelnog release-a
-      - name: Download manifest.json
+    steps:
+      - name: Checkout repo (for template)
+        uses: actions/checkout@v4
+
+      - name: Download manifest.json from this release
         uses: robinraju/release-downloader@v1.8
         with:
           tag: ${{ github.event.release.tag_name }}
           fileName: "manifest.json"
           out-file-path: "release_assets"
 
-      # (debug) Prikazi manifest
-      - name: Show manifest.json
+      - name: (debug) Show manifest.json
         run: cat release_assets/manifest.json
 
-      # 2) Postavi TAG iz dogadjaja i iscitaj SHA256 (i VERSION opcionalno) iz manifesta
-      - name: Parse manifest + set env
+      - name: Parse manifest (strip BOM) and set env
+        shell: bash
         run: |
           echo "TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-          node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync('release_assets/manifest.json','utf8'));
-          if(!m.sha256){process.exitCode=1;console.error('manifest.json must contain sha256');}
-          if(m.version){console.log('VERSION='+m.version);}
-          console.log('SHA256='+m.sha256);" >> $GITHUB_ENV
+          # Izvuci SHA256 (i opcionalni VERSION) iz manifest.json; ukloni UTF-8 BOM ako postoji
+          node - <<'NODE' >> $GITHUB_ENV
+          const fs = require('fs');
+          let txt = fs.readFileSync('release_assets/manifest.json','utf8');
+          txt = txt.replace(/^\uFEFF/, ''); // skini BOM
+          const m = JSON.parse(txt);
+          if (!m.sha256) { console.error('manifest.json must contain "sha256"'); process.exit(1); }
+          if (m.version) { console.log('VERSION=' + m.version); }
+          console.log('SHA256=' + m.sha256);
+          NODE
 
-      # 3) Renderuj release notes iz sablona (u root-u repo-a)
-      - name: Render release notes
+      - name: Render release notes from template
         run: |
+          test -f release_notes_template.md || { echo "Missing release_notes_template.md in repo root"; exit 1; }
           sed -e "s/{{TAG}}/${TAG}/g" \
               -e "s/{{SHA256}}/${SHA256}/g" \
               release_notes_template.md > RELEASE_BODY.md
+          echo "----- RELEASE BODY -----"
+          cat RELEASE_BODY.md
 
-      # 4) Azuriraj telo postojeceg release-a
       - name: Update GitHub Release body
         uses: actions/github-script@v7
         with:
