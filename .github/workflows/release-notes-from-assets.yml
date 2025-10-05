@@ -13,13 +13,11 @@ jobs:
   notes:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # potrebno za updateRelease
+      contents: write
 
     steps:
-      - name: Checkout repo (for template)
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # TAG iz eventa ili iz ručnog inputa
       - name: Set TAG
         run: |
           if [ -n "${{ github.event.release.tag_name }}" ]; then
@@ -29,7 +27,6 @@ jobs:
           fi
           echo "Using TAG=$TAG"
 
-      # Skini manifest.json iz releasa
       - name: Download manifest.json
         uses: robinraju/release-downloader@v1.8
         with:
@@ -37,45 +34,23 @@ jobs:
           fileName: "manifest.json"
           out-file-path: "release_assets"
 
-      # (debug) pokaži prve bajtove da vidimo BOM ako postoji
-      - name: Inspect manifest header
-        run: |
-          head -c 16 release_assets/manifest.json | xxd
-
-      # Ukloni UTF-8 BOM, pa ponovo upiši fajl "čist"
-      - name: Strip UTF-8 BOM from manifest
-        run: |
-          python - <<'PY'
-import io
-p='release_assets/manifest.json'
-with io.open(p,'r',encoding='utf-8-sig') as f: data=f.read()
-with io.open(p,'w',encoding='utf-8') as f: f.write(data)
-PY
-
-      # Parsiraj SHA256 (i optional VERSION) iz manifest.json
-      - name: Parse manifest and export env
+      - name: Parse manifest (strip BOM) and set env
         shell: bash
         run: |
           node - <<'NODE' >> $GITHUB_ENV
           const fs = require('fs');
-          const txt = fs.readFileSync('release_assets/manifest.json','utf8');
+          let txt = fs.readFileSync('release_assets/manifest.json','utf8').replace(/^\uFEFF/, '');
           const m = JSON.parse(txt);
           if (!m.sha256) { console.error('manifest.json must contain "sha256"'); process.exit(1); }
-          if (m.version) { console.log('VERSION=' + m.version); }
           console.log('SHA256=' + m.sha256);
           NODE
 
-      # Renderuj release notes (u root-u repo-a je release_notes_template.md)
       - name: Render release notes
         run: |
-          test -f release_notes_template.md || { echo "Missing release_notes_template.md in repo root"; exit 1; }
           sed -e "s/{{TAG}}/${TAG}/g" \
               -e "s/{{SHA256}}/${SHA256}/g" \
               release_notes_template.md > RELEASE_BODY.md
-          echo "----- RELEASE BODY -----"
-          cat RELEASE_BODY.md
 
-      # Ažuriraj telo releasa po TAG-u (radi i za release event i za ručni dispatch)
       - name: Update GitHub Release body
         uses: actions/github-script@v7
         with:
@@ -83,13 +58,8 @@ PY
             const fs = require('fs');
             const body = fs.readFileSync('RELEASE_BODY.md','utf8');
             const { data: rel } = await github.rest.repos.getReleaseByTag({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag: process.env.TAG
+              owner: context.repo.owner, repo: context.repo.repo, tag: process.env.TAG
             });
             await github.rest.repos.updateRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              release_id: rel.id,
-              body
+              owner: context.repo.owner, repo: context.repo.repo, release_id: rel.id, body
             });
