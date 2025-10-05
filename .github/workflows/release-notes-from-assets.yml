@@ -1,5 +1,4 @@
-name: Release Notes (NEW v5)
-
+name: Release Notes auto-fill
 on:
   release:
     types: [published, edited]
