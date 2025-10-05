@@ -1,4 +1,4 @@
-name: Fill Release Notes from uploaded manifest
+name: Fill Release Notes from uploaded manifest Latest
 
 on:
   release:
