@@ -4,7 +4,7 @@ Status: Pre-release (ograničen krug testera)
 Cilj: Validacija osnovne funkcionalnosti aplikacije, procesa buildovanja i mehanizma automatskog update-a.
 ________________________________________
 
-Izmene v20251009-0248
+###Izmene v20251009-0248
 
 • Ograničena dimenzija Google Map prozora na dimenziju scene, ispis dimenzije u zaglavlju i toolbar-u, podesiva Custom skala i strelica severa.
 
@@ -15,7 +15,8 @@ Izmene v20251009-0248
 • Podešeno čitanje glavne ikone programa kao ikone svih prozora i dijaloga.
 
 
-Izmene v20251007-0802
+
+###Izmene v20251007-0802
 
 •	Desktop aplikacija, buildovana PyInstaller-om kao one-folder paket.
 
@@ -71,6 +72,7 @@ Izmene v20251007-0802
 ### Asseti uz release
 •	EM_Analyzer_{{TAG}}_win64.zip — aplikacija (portable)
 •	manifest.json — meta za autoupdate (verzija, URL, SHA256)
+
 
 
 
