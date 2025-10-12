@@ -1,3 +1,10 @@
+### Izmene v20251013-0127
+
+• Generisanje fajlova svakog proračuna u poseban "batch" podfolder sa datumom i vremenom generisanja i izabranim faktorom refleksije (ukoliko je bez fakotra slabljenja materijala upisuje sufiks "_no_att").
+
+• Dodata legenda i opis svakog PNG plota
+
+
 
 ### Izmene v20251009-0248
 
