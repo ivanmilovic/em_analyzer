@@ -1,6 +1,11 @@
-Copyright (c) 2026 Ivan Milović. All rights reserved.
+Copyright (c) 2026 Ivan Milovic. All rights reserved.
 
-This software and accompanying materials are proprietary and confidential.
-No permission is granted to use, copy, modify, merge, publish, distribute,
-sublicense, and/or sell copies of the Software, except as expressly allowed
-in the accompanying End User License Agreement (EULA).
+EM Analyzer and its accompanying proprietary materials are proprietary and
+confidential. No permission is granted to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of EM Analyzer, except as expressly
+allowed in the accompanying End User License Agreement (EULA).
+
+This notice applies to the proprietary parts of EM Analyzer. Third-party
+components and libraries included with or used by the Software, including
+PySide6 / Qt for Python and other Python libraries, are governed by their
+respective license terms.
