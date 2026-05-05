@@ -1,3 +1,3 @@
 # EMAnalyzer
 
-Desktop aplikacija za proracun elektromagnetnih polja i procenu uticaja na zivotnu sredinu.
+Desktop aplikacija za proračun elektromagnetnog polja i procenu uticaja na životnu sredinu.
