@@ -1,19 +1,83 @@
-EM Analyzer — Test EULA (Non-Commercial, Evaluation Only)
+EM Analyzer — Commercial End User License Agreement (EULA)
 
-1. License Grant. You may install and use EM Analyzer solely for internal
-   evaluation and testing. No commercial use.
-2. No Redistribution. You may not share, publish, upload or distribute the
-   Software or any part of it to third parties.
-3. Confidentiality. You shall keep the Software and related materials
-   confidential and take reasonable steps to prevent disclosure.
-4. No Reverse Engineering. You may not reverse engineer, decompile, or disassemble.
-5. Term. This license is revocable at any time and automatically terminates
-   upon release of a production build or upon notice from Licensor.
-6. No Warranty. The Software is provided “AS IS” without warranty of any kind.
-7. Limitation of Liability. To the maximum extent permitted by law, Licensor
-   shall not be liable for any damages arising out of or in connection with the
-   use or inability to use the Software.
-8. Governing Law [Republic of Serbia].
+This End User License Agreement ("Agreement") governs the installation and use
+of EM Analyzer ("Software"). By installing, copying, accessing or using the
+Software, the user accepts the terms of this Agreement.
 
-© 2025 Ivan Milović. All rights reserved.
+1. License Grant.
+   Subject to payment of the applicable license fee and compliance with this
+   Agreement, Ivan Milovic ("Licensor") grants the licensed user or licensed
+   organization a limited, non-exclusive, non-transferable and revocable right
+   to install and use the Software for commercial and internal business purposes.
 
+2. Commercial Use.
+   The Software is a commercial product. Use of the Software is permitted only
+   by licensed users and only within the scope agreed with the Licensor,
+   including any applicable quotation, order, invoice, contract or written
+   license terms.
+
+3. Proprietary Software and Closed Source Code.
+   The Software, including its source code, design, structure, workflow,
+   algorithms, user interface, documentation and related materials, is
+   proprietary and confidential. This Agreement does not grant the user any
+   right to access, obtain, publish, disclose, copy, modify or distribute the
+   source code of the Software.
+
+4. No Redistribution.
+   The user may not sell, rent, lease, sublicense, share, publish, upload,
+   distribute, make available or otherwise transfer the Software, license key,
+   installation package, documentation or any part of the Software to any third
+   party without prior written permission from the Licensor.
+
+5. Confidentiality.
+   The user shall keep the Software and all related non-public materials
+   confidential and shall take reasonable measures to prevent unauthorized
+   access, copying, disclosure or distribution.
+
+6. No Reverse Engineering.
+   Except to the extent expressly permitted by mandatory applicable law or by
+   the licenses of third-party components, the user may not reverse engineer,
+   decompile, disassemble, modify, adapt, translate, circumvent technical
+   protection measures, or attempt to derive the source code, structure,
+   algorithms or internal logic of the Software.
+
+7. Third-Party Components and Open-Source Licenses.
+   The Software may include or use third-party components, including but not
+   limited to PySide6 / Qt for Python and other Python libraries. Such
+   third-party components are licensed under their respective license terms.
+   Nothing in this Agreement restricts any rights that the user may have under
+   applicable open-source licenses for those third-party components.
+
+   The proprietary parts of EM Analyzer remain closed source and are licensed
+   only under this Agreement, unless the Licensor expressly states otherwise in
+   writing.
+
+8. Updates and Maintenance.
+   The Licensor may provide updates, bug fixes or new versions of the Software
+   at its discretion or under separately agreed maintenance terms. Updates may
+   be subject to the same Agreement or to additional terms provided with the
+   update.
+
+9. License Term and Termination.
+   This Agreement remains in force while the user holds a valid license and
+   complies with its terms. The Licensor may terminate the license if the user
+   breaches this Agreement. Upon termination, the user must stop using the
+   Software and delete all unauthorized copies.
+
+10. No Warranty.
+   The Software is provided "AS IS", without warranty of any kind, whether
+   express or implied, including but not limited to warranties of
+   merchantability, fitness for a particular purpose, accuracy, uninterrupted
+   operation or absence of errors.
+
+11. Limitation of Liability.
+   To the maximum extent permitted by applicable law, the Licensor shall not be
+   liable for any indirect, incidental, special, consequential or punitive
+   damages, loss of profit, loss of data, business interruption or any damages
+   arising out of or in connection with the use or inability to use the Software.
+
+12. Governing Law.
+   This Agreement shall be governed by the laws of the Republic of Serbia,
+   unless mandatory applicable law requires otherwise.
+
+© 2025-2026 Ivan Milovic. All rights reserved.
