@@ -1,4 +1,4 @@
-Copyright (c) 2025 Ivan Milović. All rights reserved.
+Copyright (c) 2026 Ivan Milović. All rights reserved.
 
 This software and accompanying materials are proprietary and confidential.
 No permission is granted to use, copy, modify, merge, publish, distribute,
